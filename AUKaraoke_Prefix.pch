@@ -1,0 +1,5 @@
+//
+// Prefix header for all source files of the 'AUKaraoke' target in the 'AUKaraoke' project.
+//
+
+#include <Carbon/Carbon.h>
