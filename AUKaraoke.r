@@ -59,8 +59,8 @@
 #define COMP_MANUF		AUKaraoke_COMP_MANF	
 
 #define VERSION			kAUKaraokeVersion
-#define NAME			"Emahub: AU Karaoke"
-#define DESCRIPTION		"Audio Unit Template 1.0"
+#define NAME			"Emahub: AUKaraoke"
+#define DESCRIPTION		"Audio Units Karaoke Plugin"
 #define ENTRY_POINT		"AUKaraokeEntry"
 
 #include "AUResources.r"
