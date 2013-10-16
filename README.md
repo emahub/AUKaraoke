@@ -6,7 +6,7 @@ Audio Units Karaoke Plugin (pan remover & filter)
 ## Overview
 
 This plugin enables eliminate specified sound source position or frequency band with phase calculation and filter.
-It is useful for not only making instruments version (=Karaoke) but also hiding noise with original music and processing music easy to listen to each instrument parts.
+It is useful for not only making instruments version (=Karaoke) but also hiding noise in the original music and processing music easy to listen to each instrument parts.
 
 ## Installation
 
