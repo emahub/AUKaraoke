@@ -30,6 +30,17 @@ Generally, Audio Units Plugins are only for Mac OS.
 * http://www.youtube.com/watch?v=4UmsJUJAFYk
     * Elimination a sine wave at spcified sound source position and frequency band.
 
+## Available DAW
+
+This plugin is capable for these DAW.
+* Logic 9
+* Garageband '11
+* Mainstage 2
+* Ableton Live 9
+
+But, it is incapable for these DAW. (I'm examming the cause.)
+* MOTU Digital Performer 8
+
 ## License
 
 AUKaraoke has an MIT Licence http://en.wikipedia.org/wiki/MIT_License
