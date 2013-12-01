@@ -134,7 +134,7 @@ ComponentResult AUKaraoke::GetParameterInfo (
         switch (inParameterID) {                                
             case kParameter_Pan:
 				AUBase::FillInParameterName (outParameterInfo, kParamName_Pan, false);
-				outParameterInfo.unit			= kAudioUnitParameterUnit_Generic;
+				outParameterInfo.unit			= kAudioUnitParameterUnit_Pan;
 				outParameterInfo.minValue		= kMinimumValue_Pan;
 				outParameterInfo.maxValue		= kMaximumValue_Pan;
 				outParameterInfo.defaultValue	= kDefaultValue_Pan;
@@ -167,6 +167,7 @@ ComponentResult AUKaraoke::GetParameterInfo (
             case kParameter_FilterQ:
 				AUBase::FillInParameterName (outParameterInfo, kParamName_FilterQ, false);
 				outParameterInfo.unit			= kAudioUnitParameterUnit_Generic;
+                outParameterInfo.flags         += kAudioUnitParameterFlag_DisplayLogarithmic;
 				outParameterInfo.minValue		= kMinimumValue_FilterQ;
 				outParameterInfo.maxValue		= kMaximumValue_FilterQ;
 				outParameterInfo.defaultValue	= kDefaultValue_FilterQ;

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>DA014C22-32C4-4808-8819-4FC69F42894C</string>
+	<key>IDESourceControlProjectName</key>
+	<string>AUKaraoke</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>F39F911E-51ED-44FB-9FF5-C5384D2F2D42</key>
+		<string>https://github.com/emahub/AUKaraoke.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>AUKaraoke.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>F39F911E-51ED-44FB-9FF5-C5384D2F2D42</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/emahub/AUKaraoke.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>F39F911E-51ED-44FB-9FF5-C5384D2F2D42</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>F39F911E-51ED-44FB-9FF5-C5384D2F2D42</string>
+			<key>IDESourceControlWCCName</key>
+			<string>AUKaraoke</string>
+		</dict>
+	</array>
+</dict>
+</plist>

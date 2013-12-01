@@ -37,8 +37,6 @@ This plugin is capable for these DAW.
 * Garageband '11
 * Mainstage 2
 * Ableton Live 9
-
-But, it is incapable for these DAW. (I'm examming the cause.)
 * MOTU Digital Performer 8
 
 ## License

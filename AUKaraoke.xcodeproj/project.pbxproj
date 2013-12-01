@@ -390,7 +390,7 @@
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0450;
+				LastUpgradeCheck = 0500;
 			};
 			buildConfigurationList = 3E4BA247089833B7007656EC /* Build configuration list for PBXProject "AUKaraoke" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -562,20 +562,18 @@
 		3E4BA248089833B7007656EC /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386";
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx;
 			};
 			name = Development;
 		};
 		3E4BA249089833B7007656EC /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386";
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx;
 			};
 			name = Deployment;
 		};
