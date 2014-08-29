@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #ifndef __CAXException_h__
@@ -63,22 +63,45 @@ class CAX4CCString {
 public:
 	CAX4CCString(OSStatus error) {
 		// see if it appears to be a 4-char-code
+		UInt32 beErr = CFSwapInt32HostToBig(error);
 		char *str = mStr;
-		*(UInt32 *)(str + 1) = CFSwapInt32HostToBig(error);
+		memcpy(str + 1, &beErr, 4);
 		if (isprint(str[1]) && isprint(str[2]) && isprint(str[3]) && isprint(str[4])) {
 			str[0] = str[5] = '\'';
 			str[6] = '\0';
 		} else if (error > -200000 && error < 200000)
 			// no, format it as an integer
-			sprintf(str, "%d", (int)error);
+			snprintf(str, sizeof(mStr), "%d", (int)error);
 		else
-			sprintf(str, "0x%x", (int)error);
+			snprintf(str, sizeof(mStr), "0x%x", (int)error);
 	}
 	const char *get() const { return mStr; }
 	operator const char *() const { return mStr; }
 private:
 	char mStr[16];
 };
+
+class CAX4CCStringNoQuote {
+public:
+	CAX4CCStringNoQuote(OSStatus error) {
+		// see if it appears to be a 4-char-code
+		UInt32 beErr = CFSwapInt32HostToBig(error);
+		char *str = mStr;
+		memcpy(str, &beErr, 4);
+		if (isprint(str[0]) && isprint(str[1]) && isprint(str[2]) && isprint(str[3])) {
+			str[4] = '\0';
+		} else if (error > -200000 && error < 200000)
+			// no, format it as an integer
+			snprintf(str, sizeof(mStr), "%d", (int)error);
+		else
+			snprintf(str, sizeof(mStr), "0x%x", (int)error);
+	}
+	const char *get() const { return mStr; }
+	operator const char *() const { return mStr; }
+private:
+	char mStr[16];
+};
+
 
 // An extended exception class that includes the name of the failed operation
 class CAXException {
@@ -96,9 +119,9 @@ public:
 			strlcpy(mOperation, operation, sizeof(mOperation));
 		}
 	
-	char *FormatError(char *str) const
+	char *FormatError(char *str, size_t strsize) const
 	{
-		return FormatError(str, mError);
+		return FormatError(str, strsize, mError);
 	}
 	
 	char				mOperation[256];
@@ -108,9 +131,9 @@ public:
 	
 	typedef void (*WarningHandler)(const char *msg, OSStatus err);
 	
-	static char *FormatError(char *str, OSStatus error)
+	static char *FormatError(char *str, size_t strsize, OSStatus error)
 	{
-		strcpy(str, CAX4CCString(error));
+		strlcpy(str, CAX4CCString(error), strsize);
 		return str;
 	}
 	
@@ -130,7 +153,7 @@ private:
 		do {																	\
 			OSStatus __err = error;												\
 			if (__err) {														\
-				DebugMessageN2("about to throw %s: %s", CAX4CCString(__err).get(), operation);\
+				DebugMessageN4("%s:%d: about to throw %s: %s", __FILE__, __LINE__, CAX4CCString(__err).get(), operation);\
 				__THROW_STOP;															\
 				throw CAXException(operation, __err);							\
 			}																	\
@@ -140,7 +163,7 @@ private:
 		do {																	\
 			if (condition) {													\
 				OSStatus __err = error;											\
-				DebugMessageN2("about to throw %s: %s", CAX4CCString(__err).get(), operation);\
+				DebugMessageN4("%s:%d: about to throw %s: %s", __FILE__, __LINE__, CAX4CCString(__err).get(), operation);\
 				__THROW_STOP;															\
 				throw CAXException(operation, __err);							\
 			}																	\
@@ -150,7 +173,7 @@ private:
 		do {																	\
 			OSStatus __err = error;												\
 			if (__err) {														\
-				DebugMessageN2("about to throw %s: %s", CAX4CCString(__err).get(), #error);\
+				DebugMessageN4("%s:%d: about to throw %s: %s", __FILE__, __LINE__, CAX4CCString(__err).get(), #error);\
 				STOP;															\
 				goto label;														\
 			}																	\
@@ -159,7 +182,7 @@ private:
 	#define XAssert(assertion)													\
 		do {																	\
 			if (!(assertion)) {													\
-				DebugMessageN3("[%s, %d] error: failed assertion: %s", __FILE__, __LINE__, #assertion);		\
+				DebugMessageN3("%s:%d: error: failed assertion: %s", __FILE__, __LINE__, #assertion);		\
 				__ASSERT_STOP;															\
 			}																	\
 		} while (0)
@@ -168,7 +191,7 @@ private:
 		do {																	\
 			OSStatus __err = error;												\
 			if (__err) {														\
-				DebugMessageN2("error %s: %s", CAX4CCString(__err).get(), #error);\
+				DebugMessageN4("%s:%d: error %s: %s", __FILE__, __LINE__, CAX4CCString(__err).get(), #error);\
 				STOP;															\
 			}																	\
 		} while (0)

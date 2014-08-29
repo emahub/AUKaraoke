@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #ifndef __AUBaseHelper_h__
@@ -57,19 +57,14 @@
 
 #include "AUBase.h"
 
-
-UInt32 FindInvalidSamples(Float32 *inSource, UInt32 inFramesToProcess, bool &hasNonZero, bool zapInvalidSamples);
-
-
 // helpers for dealing with the file-references dictionary in an AUPreset
-
-extern "C" OSStatus	
-GetFileRefPath (CFDictionaryRef parent, CFStringRef frKey, CFStringRef * fPath);
+OSStatus GetFileRefPath (CFDictionaryRef parent, CFStringRef frKey, CFStringRef * fPath);
 
 // if fileRefDict is NULL, this call creates one
 // if not NULL, then the key value is added to it
-extern "C" CFMutableDictionaryRef 
-CreateFileRefDict (CFStringRef fKey, CFStringRef fPath, CFMutableDictionaryRef fileRefDict);
+CFMutableDictionaryRef CreateFileRefDict (CFStringRef fKey, CFStringRef fPath, CFMutableDictionaryRef fileRefDict);
+
+int AccessURLAsset(const CFURLRef inURL, int mode);
 
 #if DEBUG
 	void PrintAUParamEvent (AudioUnitParameterEvent& event, FILE* f);

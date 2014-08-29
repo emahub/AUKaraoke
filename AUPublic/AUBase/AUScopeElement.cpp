@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #include "AUScopeElement.h"
@@ -87,6 +87,28 @@ inline ParameterMapEvent&	AUElement::GetParamEvent(AudioUnitParameterID paramID)
 	}
 	
 	return *event;
+}
+
+//_____________________________________________________________________________
+//
+//	Helper method.
+//	returns whether the specified paramID is known to the element
+//
+bool		AUElement::HasParameterID (AudioUnitParameterID paramID) const
+{	
+	if(mUseIndexedParameters)
+	{
+		if(paramID >= mIndexedParameters.size() )
+			return false;
+		
+		return true;
+	}
+	
+	ParameterMap::const_iterator i = mParameters.find(paramID);
+	if (i == mParameters.end())
+		return false;
+		
+	return true;
 }
 
 //_____________________________________________________________________________
@@ -217,7 +239,7 @@ void			AUElement::GetParameterList(AudioUnitParameterID *outList)
 {
 	if(mUseIndexedParameters)
 	{
-		UInt32 nparams = mIndexedParameters.size();
+		UInt32 nparams = static_cast<UInt32>(mIndexedParameters.size());
 		for (UInt32 i = 0; i < nparams; i++ )
 			*outList++ = (AudioUnitParameterID)i;
 	}
@@ -234,7 +256,7 @@ void			AUElement::SaveState(CFMutableDataRef data)
 {
 	if(mUseIndexedParameters)
 	{
-		UInt32 nparams = mIndexedParameters.size();
+		UInt32 nparams = static_cast<UInt32>(mIndexedParameters.size());
 		UInt32 theData = CFSwapInt32HostToBig(nparams);
 		CFDataAppendBytes(data, (UInt8 *)&theData, sizeof(nparams));
 	
@@ -256,7 +278,7 @@ void			AUElement::SaveState(CFMutableDataRef data)
 	}
 	else
 	{
-		UInt32 nparams = CFSwapInt32HostToBig(mParameters.size());
+		UInt32 nparams = CFSwapInt32HostToBig(static_cast<uint32_t>(mParameters.size()));
 		CFDataAppendBytes(data, (UInt8 *)&nparams, sizeof(nparams));
 	
 		for (ParameterMap::iterator i = mParameters.begin(); i != mParameters.end(); ++i) {
@@ -416,7 +438,7 @@ void	AUScope::SetNumberOfElements(UInt32 numElements)
 	if (numElements > mElements.size()) {
 		mElements.reserve(numElements);
 		while (numElements > mElements.size()) {
-			AUElement *elem = mCreator->CreateElement(GetScope(), mElements.size());
+			AUElement *elem = mCreator->CreateElement(GetScope(), static_cast<UInt32>(mElements.size()));
 			mElements.push_back(elem);
 		}
 	} else
@@ -475,38 +497,69 @@ bool	AUScope::RestoreElementNames (CFDictionaryRef& inNameDict)
 {
 	static char string[32];
 
-	//first we have to see if we have enough elements and if not create them
+	//first we have to see if we have enough elements
 	bool didAddElements = false;
-	unsigned int maxElNum = 0;
+	unsigned int maxElNum = GetNumberOfElements();
 	
-	int dictSize = CFDictionaryGetCount(inNameDict);
+	int dictSize = static_cast<int>(CFDictionaryGetCount(inNameDict));
 	CFStringRef * keys = (CFStringRef*)CA_malloc (dictSize * sizeof (CFStringRef));
 	CFDictionaryGetKeysAndValues (inNameDict, reinterpret_cast<const void**>(keys), NULL);
 	for (int i = 0; i < dictSize; i++)
 	{
-		unsigned int intKey;
+		unsigned int intKey = 0;
 		CFStringGetCString (keys[i], string, 32, kCFStringEncodingASCII);
-		sscanf (string, "%u", &intKey);
-		if (UInt32(intKey) > maxElNum)
-			maxElNum = intKey;
-	}
-	
-	if (maxElNum >= GetNumberOfElements()) {
-		SetNumberOfElements (maxElNum+1);
-		didAddElements = true;
-	}
-		
-		// OK, now we have the number of elements that we need - lets restate their names
-	for (int i = 0; i < dictSize; i++)
-	{
-		CFStringRef elName = reinterpret_cast<CFStringRef>(CFDictionaryGetValue (inNameDict,  keys[i]));
-		int intKey;
-		CFStringGetCString (keys[i], string, 32, kCFStringEncodingASCII);
-		sscanf (string, "%d", &intKey);
-		GetElement (intKey)->SetName (elName);
+		int result = sscanf (string, "%u", &intKey);
+        // check if sscanf succeeded and element index is less than max elements.
+		if (result && UInt32(intKey) < maxElNum)
+        {
+            CFStringRef elName = reinterpret_cast<CFStringRef>(CFDictionaryGetValue (inNameDict,  keys[i]));
+            AUElement* element = GetElement (intKey);
+            if (element)
+                element->SetName (elName);
+        }
 	}
 	free (keys);
 	
 	return didAddElements;
 }
 
+void    AUScope::SaveState(CFMutableDataRef data)
+{
+    AudioUnitElement nElems = GetNumberOfElements();
+    for (AudioUnitElement ielem = 0; ielem < nElems; ++ielem) {
+        AUElement *element = GetElement(ielem);
+        UInt32 nparams = element->GetNumberOfParameters();
+        if (nparams > 0) {
+            struct {
+                UInt32	scope;
+                UInt32	element;
+            } hdr;
+            
+            hdr.scope = CFSwapInt32HostToBig(GetScope());
+            hdr.element = CFSwapInt32HostToBig(ielem);
+            CFDataAppendBytes(data, (UInt8 *)&hdr, sizeof(hdr));
+            
+            element->SaveState(data);
+        }
+    }
+}
+
+const UInt8 *	AUScope::RestoreState(const UInt8 *state)
+{
+    const UInt8 *p = state;
+    UInt32 elementIdx = CFSwapInt32BigToHost(*(UInt32 *)p);	p += sizeof(UInt32);
+    AUElement *element = GetElement(elementIdx);
+    if (!element) {
+        struct {
+            AudioUnitParameterID		paramID;
+            AudioUnitParameterValue		value;
+        } entry;
+        UInt32 nparams = CFSwapInt32BigToHost(*(UInt32 *)p);
+        p += sizeof(UInt32);
+        
+        p += nparams * sizeof(entry);
+    } else
+        p = element->RestoreState(p);
+    
+    return p;
+}

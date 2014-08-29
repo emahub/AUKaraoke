@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #if !defined(__CADebugMacros_h__)
@@ -88,6 +88,7 @@
 //	that have been added purely to avert -wshorten64-32 warnings on 64 bit platforms.
 //	For want of a better place to park this, we'll park it here.
 #define	ToUInt32(X)	((UInt32)(X))
+#define	ToSInt32(X)	((SInt32)(X))
 
 #pragma mark	Basic Definitions
 
@@ -362,7 +363,7 @@ void	LogWarning(const char *fmt, ...);		// writes to syslog (and stderr if debug
 
 #define	ThrowIfKernelError(inKernelError, inException, inMessage)						\
 			{																			\
-				unsigned int __Err = (inKernelError);									\
+				int __Err = (inKernelError);											\
 				if(__Err != 0)															\
 				{																		\
 					DebugMessageN1(inMessage ", Error: 0x%X", __Err);					\
@@ -376,7 +377,7 @@ void	LogWarning(const char *fmt, ...);		// writes to syslog (and stderr if debug
 				if(__Err != 0)															\
 				{																		\
 					char __4CC[5] = CA4CCToCString(__Err);								\
-					DebugMessageN2(inMessage ", Error: %d (%s)", (int)__Err, __4CC);		\
+					DebugMessageN2(inMessage ", Error: %d (%s)", (int)__Err, __4CC);	\
 					Throw(inException);													\
 				}																		\
 			}
@@ -541,7 +542,7 @@ void	LogWarning(const char *fmt, ...);		// writes to syslog (and stderr if debug
 
 #define	ThrowIfKernelError(inKernelError, inException, inMessage)						\
 			{																			\
-				unsigned int __Err = (inKernelError);									\
+				int __Err = (inKernelError);											\
 				if(__Err != 0)															\
 				{																		\
 					Throw(inException);													\

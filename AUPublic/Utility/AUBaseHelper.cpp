@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #include "AUBaseHelper.h"
@@ -68,40 +68,6 @@ OSStatus	GetFileRefPath (CFDictionaryRef parent, CFStringRef frKey, CFStringRef 
 	return noErr;
 }
 
-// write valid samples check, with bool for zapping
-
-UInt32 FindInvalidSamples(Float32 *inSource, UInt32 inFramesToProcess, bool &outHasNonZero, bool zapInvalidSamples)
-{
-	float *sourceP = inSource;
-	
-	UInt32 badSamplesDetected = 0;
-	for (UInt32 i=0; i < inFramesToProcess; i++)
-	{
-		float  input = *sourceP;
-		
-		if(input > 0) 
-			outHasNonZero = true;
-
-		float absx = fabs(input);
-		
-		// a bad number!
-		if (!(absx < 1e15))
-		{
-			if (!(absx == 0))
-			{
-				//printf("\tbad sample: %f\n", input);
-				badSamplesDetected++;
-				if (zapInvalidSamples)
-					*sourceP = 0;
-			}
-		}
-        sourceP++;
-	}
-	
-	return badSamplesDetected;
-}
-
-
 CFMutableDictionaryRef CreateFileRefDict (CFStringRef fKey, CFStringRef fPath, CFMutableDictionaryRef fileRefDict)
 {
 	if (!fileRefDict)
@@ -111,6 +77,31 @@ CFMutableDictionaryRef CreateFileRefDict (CFStringRef fKey, CFStringRef fPath, C
 	
 	return fileRefDict;
 }
+
+#if TARGET_OS_MAC
+// check if the URL can be accessed for reading/writing.  Returns 0 if yes, or the error value.
+int AccessURLAsset(const CFURLRef inURL, int mode)
+{
+    char path[PATH_MAX];
+    if (CFURLGetFileSystemRepresentation(inURL, TRUE, (UInt8 *)path, PATH_MAX) == FALSE)
+		return kAudio_FileNotFoundError;
+	// check whether we have access
+	int ret = access(path, mode);
+//	syslog(LOG_CRIT, "access() error is %d for \"%s\".\n", ret, path);
+	if (ret == 0) return 0;
+	switch (errno) {
+		case EACCES:
+		case EPERM:
+			return -54;	/*permission denied error*/
+		case ENOENT:
+		case ENOTDIR:
+		case ELOOP:
+			return kAudio_FileNotFoundError;
+		default:
+			return errno;
+	}
+}
+#endif
 
 #if DEBUG
 //_____________________________________________________________________________

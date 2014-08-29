@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #ifndef __CAReferenceCounted_h__
@@ -58,11 +58,21 @@ public:
 	
 	void	release() 
 			{ 
-				SInt32 rc = CAAtomicDecrement32 (&mRefCount);
+				SInt32 rc = CAAtomicDecrement32(&mRefCount);
 				if (rc == 0) {
 					releaseObject();
 				}
 			}
+
+
+	class Retainer {
+	public:
+		Retainer(CAReferenceCounted *obj) : mObject(obj) { mObject->retain(); }
+		~Retainer() { mObject->release(); }
+	
+	private:
+		CAReferenceCounted *	mObject;
+	};
 
 protected:
     virtual	~CAReferenceCounted() { }

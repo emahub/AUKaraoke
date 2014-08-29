@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #include "AUBuffer.h"
@@ -76,7 +76,9 @@ void				AUBufferList::Allocate(const CAStreamBasicDescription &format, UInt32 nF
 
 	// careful -- the I/O thread could be running!
 	if (nStreams > mAllocatedStreams) {
-		mPtrs = (AudioBufferList *)CA_realloc(mPtrs, SafeMultiplyAddUInt32(nStreams, sizeof(AudioBuffer), offsetof(AudioBufferList, mBuffers)));
+		size_t theHeaderSize = sizeof(AudioBufferList) - sizeof(AudioBuffer);
+		mPtrs = (AudioBufferList *)CA_realloc(mPtrs,
+									SafeMultiplyAddUInt32(nStreams, sizeof(AudioBuffer), theHeaderSize));
 		mAllocatedStreams = nStreams;
 	}
 	UInt32 bytesPerStream = SafeMultiplyAddUInt32(nFrames, format.mBytesPerFrame, 0xF) & ~0xF;

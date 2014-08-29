@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #ifndef __CAVectorUnit_h__
@@ -92,7 +92,8 @@ public:
 	static bool			HasVectorUnit() { return GetVectorUnitType() > kVecNone; }
 	static bool			HasAltivec() { return GetVectorUnitType() == kVecAltivec; }
 	static bool			HasSSE2() { return GetVectorUnitType() >= kVecSSE2; }
-	static bool			HasSSE3() { return GetVectorUnitType() == kVecSSE3; }
+	static bool			HasSSE3() { return GetVectorUnitType() >= kVecSSE3; }
+	static bool			HasAVX1() { return GetVectorUnitType() >= kVecAVX1; }
 	static bool			HasNeon() { return GetVectorUnitType() == kVecNeon; }
 };
 #endif

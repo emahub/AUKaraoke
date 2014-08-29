@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 //==================================================================================================
@@ -161,13 +161,13 @@ bool	CAGuard::WaitFor(UInt64 inNanos)
 	static const UInt64	kNanosPerSecond = 1000000000ULL;
 	if(inNanos >= kNanosPerSecond)
 	{
-		theTimeSpec.tv_sec = static_cast<UInt32>(inNanos / kNanosPerSecond);
-		theTimeSpec.tv_nsec = static_cast<UInt32>(inNanos % kNanosPerSecond);
+		theTimeSpec.tv_sec = static_cast<long>(inNanos / kNanosPerSecond);
+		theTimeSpec.tv_nsec = static_cast<long>(inNanos % kNanosPerSecond);
 	}
 	else
 	{
 		theTimeSpec.tv_sec = 0;
-		theTimeSpec.tv_nsec = static_cast<UInt32>(inNanos);
+		theTimeSpec.tv_nsec = static_cast<long>(inNanos);
 	}
 	
 	#if	Log_TimedWaits || Log_Latency || Log_Average_Latency
@@ -238,7 +238,11 @@ bool	CAGuard::WaitFor(UInt64 inNanos)
 	ThrowIf((theError != WAIT_OBJECT_0) && (theError != WAIT_TIMEOUT), CAException(GetLastError()), "CAGuard::WaitFor: Wait got an error");
 	mOwner = GetCurrentThreadId();
 	ResetEvent(mEvent);
-	
+	// This mutex should be locked again when time out happens.rdar://12270555
+	if(theError == WAIT_TIMEOUT) {
+		DWORD dwError = WaitForSingleObject(mMutex, INFINITE);
+		ThrowIf((dwError != WAIT_OBJECT_0), CAException(GetLastError()), "CAGuard::WaitFor: failed to acquire the mutex back when timeout happened\n");
+	}
 	#if	Log_TimedWaits || Log_Latency || Log_Average_Latency
 		UInt64	theEndNanos = CAHostTimeBase::GetCurrentTimeInNanos();
 	#endif

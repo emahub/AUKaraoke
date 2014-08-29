@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #ifndef __AUScopeElement_h__
@@ -208,11 +208,13 @@ public:
 /*! @method GetNumberOfParameters */
 	virtual UInt32				GetNumberOfParameters()
 	{
-		if(mUseIndexedParameters) return mIndexedParameters.size(); else return mParameters.size();
+		if(mUseIndexedParameters) return static_cast<UInt32>(mIndexedParameters.size()); else return static_cast<UInt32>(mParameters.size());
 	}
 /*! @method GetParameterList */
 	virtual void				GetParameterList(AudioUnitParameterID *outList);
-		
+/*! @method HasParameterID */
+	bool						HasParameterID (AudioUnitParameterID paramID) const;
+	
 /*! @method GetParameter */
 	AudioUnitParameterValue		GetParameter(AudioUnitParameterID paramID);
 /*! @method SetParameter */
@@ -301,11 +303,11 @@ public:
 /*! @method NeedsBufferSpace */
 	virtual bool				NeedsBufferSpace() const = 0;
 
-/*! @method DeallocateBuffer */
+/*! @method SetWillAllocateBuffer */
 	void						SetWillAllocateBuffer(bool inFlag) { 
 									mWillAllocate = inFlag; 
 								}
-/*! @method DeallocateBuffer */
+/*! @method WillAllocateBuffer */
 	bool						WillAllocateBuffer() const { 
 									return mWillAllocate; 
 								}
@@ -465,11 +467,12 @@ public:
 								AudioUnitScope scope, 
 								UInt32 numElements)
 	{
+		mCreator = creator;
+		mScope = scope;
+
 		if (mDelegate)
 			return mDelegate->Initialize(creator, scope, numElements);
 			
-		mCreator = creator;
-		mScope = scope;
 		SetNumberOfElements(numElements);
 	}
 	
@@ -482,7 +485,7 @@ public:
 		if (mDelegate)
 			return mDelegate->GetNumberOfElements();
 			
-		return mElements.size(); 
+		return static_cast<UInt32>(mElements.size());
 	}
 	
 /*! @method GetElement */
@@ -526,6 +529,12 @@ public:
 	AudioUnitScope		GetScope() const { return mScope; }
 
 	void SetDelegate(AUScopeDelegate* inDelegate) { mDelegate = inDelegate; }
+
+/*! @method SaveState */
+    void            SaveState(CFMutableDataRef data);
+
+/*! @method RestoreState */
+    const UInt8 *	RestoreState(const UInt8 *state);
 	
 private:
 	typedef std::vector<AUElement *> ElementVector;

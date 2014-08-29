@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #ifndef __AUPlugInBase_h__
@@ -99,6 +99,14 @@ class AUBaseProcessMultipleFactory : public APFactory<AUBaseProcessMultipleLooku
 {
 };
 
+struct AUBaseProcessAndMultipleLookup {
+	static AudioComponentMethod Lookup (SInt16 selector);
+};
+template <class Implementor>
+class AUBaseProcessAndMultipleFactory : public APFactory<AUBaseProcessAndMultipleLookup, Implementor>
+{
+};
+
 #if !CA_BASIC_AU_FEATURES
 struct AUMIDILookup {
 	static AudioComponentMethod Lookup (SInt16 selector);
@@ -121,6 +129,14 @@ struct AUMusicLookup {
 };
 template <class Implementor>
 class AUMusicDeviceFactory : public APFactory<AUMusicLookup, Implementor>
+{
+};
+
+struct AUAuxBaseLookup {
+	static AudioComponentMethod Lookup (SInt16 selector);
+};
+template <class Implementor>
+class AUAuxBaseFactory : public APFactory<AUAuxBaseLookup, Implementor>
 {
 };
 #endif // CA_BASIC_AU_FEATURES

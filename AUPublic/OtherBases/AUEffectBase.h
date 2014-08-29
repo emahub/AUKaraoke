@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #ifndef __AUEffectBase_h__
@@ -135,41 +135,23 @@ public:
 
 	// convenience wrappers for accessing parameters in the global scope
 	/*! @method SetParameter */
+	using AUBase::SetParameter;
 	void						SetParameter(			AudioUnitParameterID			paramID,
 														AudioUnitParameterValue			value)
 								{
 									Globals()->SetParameter(paramID, value);
 								}
-    // since we overload SetParameter() as above, the following method is required to
-    // not hide the virtual function in base class
-    /*! @method SetParameter */
-	virtual OSStatus 	SetParameter(AudioUnitParameterID			inID,
-                                     AudioUnitScope 				inScope,
-                                     AudioUnitElement 				inElement,
-                                     AudioUnitParameterValue		inValue,
-                                     UInt32							inBufferOffsetInFrames)
-                        {
-                            return AUBase::SetParameter(inID, inScope, inElement, inValue, inBufferOffsetInFrames);
-                        }
-
+								
 	/*! @method GetParameter */
+	using AUBase::GetParameter;
 	AudioUnitParameterValue		GetParameter(			AudioUnitParameterID			paramID )
 								{
 									return Globals()->GetParameter(paramID );
 								}
 
-    // since we overload GetParameter() as above, the following method is required to
-    // not hide the virtual function in base class
-    /*! @method GetParameter */
-    virtual OSStatus 	GetParameter(AudioUnitParameterID			inID,
-                                     AudioUnitScope 				inScope,
-                                     AudioUnitElement 				inElement,
-                                     AudioUnitParameterValue &		outValue)
-                        {
-                            return AUBase::GetParameter(inID, inScope, inElement, outValue);
-                        }
-    
-
+	/*! @method CanScheduleParameters */
+	virtual bool				CanScheduleParameters() const { return true; }
+	
 	/*! @method IsBypassEffect */
 	// This is used for the property value - to reflect to the UI if an effect is bypassed
 	bool						IsBypassEffect () { return mBypassEffect; }
@@ -196,7 +178,6 @@ public:
 	
 	/*! @method GetParamHasSampleRateDependency */
 	bool						GetParamHasSampleRateDependency () const { return mParamSRDep; }
-
 
 	struct ScheduledProcessParams	// pointer passed in as void* userData param for ProcessScheduledSlice()
 	{
@@ -245,6 +226,8 @@ protected:
 										const AudioBufferList &			inBuffer,
 										AudioBufferList &				outBuffer,
 										UInt32							inFramesToProcess );
+
+	CAStreamBasicDescription::CommonPCMFormat GetCommonPCMFormat() const { return mCommonPCMFormat; }
 	
 
 private:
@@ -347,6 +330,9 @@ void	AUEffectBase::ProcessBufferListsT(
 
 	// call the kernels to handle either interleaved or deinterleaved
 	if (inBuffer.mNumberBuffers == 1) {
+		if (inBuffer.mBuffers[0].mNumberChannels == 0)
+			throw CAException(kAudio_ParamError);
+			
 		for (UInt32 channel = 0; channel < mKernelList.size(); ++channel) {
 			AUKernelBase *kernel = mKernelList[channel];
 			

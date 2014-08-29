@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #ifndef __CABufferList_h__
@@ -298,6 +298,11 @@ public:
 	}
 	
 	UInt32		GetCapacityBytes() const { return mBufferCapacity; }
+	
+	template <typename T>
+	T*			GetData(UInt32 inBuffer) {
+		return static_cast<T*>(mABL.mBuffers[inBuffer].mData);
+	}
 
 protected:
 	AudioBufferList &	_GetBufferList() { return mABL; }	// use with care

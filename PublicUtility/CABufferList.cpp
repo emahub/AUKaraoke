@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #include "CABufferList.h"
@@ -199,10 +199,10 @@ void CAShowAudioBufferList(const AudioBufferList &abl, int framesToPrint, const 
 			if (fmt.mBitsPerChannel == 32) {
 				if (fmt.mFormatFlags & kLinearPCMFormatFlagIsBigEndian) {
 					wordSize = 10;
-					strcpy(fmtstr, ", BEF");
+					strlcpy(fmtstr, ", BEF", sizeof(fmtstr));
 				} else {
 					wordSize = -10;
-					strcpy(fmtstr, ", LEF");
+					strlcpy(fmtstr, ", LEF", sizeof(fmtstr));
 				}
 			}
 		} else {
@@ -210,15 +210,15 @@ void CAShowAudioBufferList(const AudioBufferList &abl, int framesToPrint, const 
 			if (wordSize > 0) {
 				int fracbits = (asbd.mFormatFlags & kLinearPCMFormatFlagsSampleFractionMask) >> kLinearPCMFormatFlagsSampleFractionShift;
 				if (fracbits > 0)
-					sprintf(fmtstr, ", %d.%d-bit", (int)asbd.mBitsPerChannel - fracbits, fracbits);
+					snprintf(fmtstr, sizeof(fmtstr), ", %d.%d-bit", (int)asbd.mBitsPerChannel - fracbits, fracbits);
 				else
-					sprintf(fmtstr, ", %d-bit", (int)asbd.mBitsPerChannel);
+					snprintf(fmtstr, sizeof(fmtstr), ", %d-bit", (int)asbd.mBitsPerChannel);
 
 				if (!(fmt.mFormatFlags & kLinearPCMFormatFlagIsBigEndian)) {
 					wordSize = -wordSize;
-					strcat(fmtstr, " LEI");
+					strlcat(fmtstr, " LEI", sizeof(fmtstr));
 				} else {
-					strcat(fmtstr, " BEI");
+					strlcat(fmtstr, " BEI", sizeof(fmtstr));
 				}
 			}
 		}
@@ -248,15 +248,10 @@ extern "C" int CrashIfClientProvidedBogusAudioBufferList(const AudioBufferList *
 			anyNull = 1;
 			if (nullok) continue;
 		}
-        
-        // if client provided a bogus ABL, we want to crash here
 		unsigned datasize = buf->mDataByteSize;
-		if (datasize >= sizeof(int)) {
-            // turn off the analyzer warning in this case since crash if any, is intended            
-#ifndef __clang_analyzer__
+		if (datasize >= sizeof(int) && p != NULL) {
 			sum += p[0];
 			sum += p[datasize / sizeof(int) - 1];
-#endif            
 		}
 	}
 	return anyNull | (sum & ~1);

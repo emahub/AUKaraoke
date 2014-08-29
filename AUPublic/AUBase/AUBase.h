@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #ifndef __AUBase_h__
@@ -66,6 +66,7 @@
 #include "CAMath.h"
 #include "CAThreadSafeList.h"
 #include "CAVectorUnit.h"
+#include "CAMutex.h"
 #if !defined(__COREAUDIO_USE_FLAT_INCLUDES__)
 	#include <AudioUnit/AudioUnit.h>
 	#if !CA_BASIC_AU_FEATURES
@@ -245,6 +246,9 @@ public:
 														AudioUnitParameterValue			inValue,
 														UInt32							inBufferOffsetInFrames);
 
+	/*! @method CanScheduleParams */
+	virtual bool CanScheduleParameters() const = 0;
+
 	/*! @method ScheduleParameter */
 	virtual OSStatus 	ScheduleParameter (		const AudioUnitParameterEvent 	*inParameterEvent,
 														UInt32							inNumEvents);
@@ -382,6 +386,9 @@ public:
 
 	/*! @method SaveState */
 	virtual OSStatus			SaveState(				CFPropertyListRef *				outData);
+    
+    /*! @method SaveExtendedScopes */
+	virtual void                SaveExtendedScopes(		CFMutableDataRef				outData) {};
 
 	/*! @method RestoreState */
 	virtual OSStatus			RestoreState(			CFPropertyListRef				inData);
@@ -411,6 +418,9 @@ public:
 		// If not a valid preset, return an error, and the pre-existing preset is restored
 	/*! @method NewFactoryPresetSet */
 	virtual OSStatus			NewFactoryPresetSet (const AUPreset & inNewFactoryPreset);
+	
+	/*! @method NewCustomPresetSet */
+	virtual OSStatus            NewCustomPresetSet (const AUPreset & inNewCustomPreset);
 
 #if !CA_USE_AUDIO_PLUGIN_ONLY
 	/*! @method GetNumCustomUIComponents */
@@ -575,6 +585,10 @@ public:
 
 	/*! @method GetMaxFramesPerSlice */
 	UInt32						GetMaxFramesPerSlice() const { return mMaxFramesPerSlice; }
+	/*! @method UsesFixedBlockSize */
+	bool						UsesFixedBlockSize() const { return mUsesFixedBlockSize; }
+	/*! @method SetUsesFixedBlockSize */
+	void						SetUsesFixedBlockSize(bool inUsesFixedBlockSize) { mUsesFixedBlockSize = inUsesFixedBlockSize; }
 	
 	/*! @method GetVectorUnitType */
 	static SInt32				GetVectorUnitType() { return sVectorUnitType; }
@@ -585,7 +599,7 @@ public:
 	/*! @method HasSSE2 */
 	static bool					HasSSE2() { return sVectorUnitType >= kVecSSE2; }
 	/*! @method HasSSE3 */
-	static bool					HasSSE3() { return sVectorUnitType == kVecSSE3; }
+	static bool					HasSSE3() { return sVectorUnitType >= kVecSSE3; }
 	
 	/*! @method AudioUnitAPIVersion */
 	UInt8						AudioUnitAPIVersion() const { return mAudioUnitAPIVersion; }
@@ -666,6 +680,8 @@ public:
 #endif
 
 	char*						GetLoggingString () const;
+	
+	CAMutex*					GetMutex() { return mAUMutex; }
 
 	// ________________________________________________________________________
 	/*! @method CreateElement */
@@ -734,6 +750,7 @@ protected:
 	/*! @method ReallocateBuffers */
 	virtual void				ReallocateBuffers();
 									// needs to be called when mMaxFramesPerSlice changes
+	virtual void				DeallocateIOBuffers();
 		
 	/*! @method FillInParameterName */
 	static void					FillInParameterName (AudioUnitParameterInfo& ioInfo, CFStringRef inName, bool inShouldRelease)
@@ -950,6 +967,9 @@ private:
 	AUPreset					mCurrentPreset;
 	
 protected:
+	/*! @var mUsesFixedBlockSize */
+	bool						mUsesFixedBlockSize;
+	
 	struct PropertyListener {
 		AudioUnitPropertyID				propertyID;
 		AudioUnitPropertyListenerProc	listenerProc;
@@ -969,15 +989,24 @@ protected:
 	// if this is NOT null, it will contain identifying info about this AU.
 	char*						mLogString;
 
+	/*! @var mNickName */
+	CFStringRef					mNickName;
+
+	/*! @var mAUMutex */
+	CAMutex *					mAUMutex;
+
 private:
 	/*! @var sVectorUnitType */
 	static SInt32	sVectorUnitType;
 
-#if !CA_NO_AU_UI_FEATURES
+#if !CA_NO_AU_HOST_CALLBACKS
 protected:
 	/*! @var mHostCallbackInfo */
 	HostCallbackInfo 			mHostCallbackInfo;
 
+#endif
+#if !CA_NO_AU_UI_FEATURES
+protected:
 	/*! @var mContextInfo */
 	CFStringRef					mContextName;
 #endif

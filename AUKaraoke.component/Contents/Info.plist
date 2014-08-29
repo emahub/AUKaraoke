@@ -20,40 +20,40 @@
 			<key>type</key>
 			<string>aufx</string>
 			<key>version</key>
-			<integer>65536</integer>
+			<integer>65792</integer>
 		</dict>
 	</array>
 	<key>BuildMachineOSBuild</key>
-	<string>13A603</string>
+	<string>13E28</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
 	<string>AUKaraoke</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.audiounit.AUKaraoke</string>
+	<string>com.emahub.audiounit.AUKaraoke</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleSignature</key>
-	<string>????</string>
+	<string>Aaud</string>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+	<string>1.1</string>
 	<key>CSResourcesFileMapped</key>
 	<true/>
 	<key>DTCompiler</key>
 	<string>com.apple.compilers.llvm.clang.1_0</string>
 	<key>DTPlatformBuild</key>
-	<string>5A3005</string>
+	<string>5B1008</string>
 	<key>DTPlatformVersion</key>
 	<string>GM</string>
 	<key>DTSDKBuild</key>
-	<string>13A595</string>
+	<string>13C64</string>
 	<key>DTSDKName</key>
 	<string>macosx10.9</string>
 	<key>DTXcode</key>
-	<string>0502</string>
+	<string>0511</string>
 	<key>DTXcodeBuild</key>
-	<string>5A3005</string>
+	<string>5B1008</string>
 </dict>
 </plist>

@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #ifndef __CAAtomicStack_h__
@@ -79,7 +79,7 @@ public:
 		return result;
 	}
 	
-	bool	empty() { return mHead == NULL; }
+	bool	empty() const { return mHead == NULL; }
 	
 	T *		head() { return mHead; }
 	

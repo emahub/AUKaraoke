@@ -41,16 +41,29 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #if !defined(__CADebugger_h__)
 #define __CADebugger_h__
 
 //=============================================================================
+//	Includes
+//=============================================================================
+
+#if !defined(__COREAUDIO_USE_FLAT_INCLUDES__)
+	#include <CoreAudio/CoreAudioTypes.h>
+#else
+	#include <CoreAudioTypes.h>
+#endif
+
+//=============================================================================
 //	CADebugger
 //=============================================================================
 
-extern void	CADebuggerStop();
+#if	TARGET_API_MAC_OSX
+	extern bool CAIsDebuggerAttached(void);
+#endif
+extern void	CADebuggerStop(void);
 
 #endif

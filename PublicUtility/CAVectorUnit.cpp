@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #include "CAVectorUnit.h"
@@ -168,19 +168,23 @@ SInt32	CAVectorUnit_Examine()
 		if (!error && vType > 0)
 			result = kVecAltivec;
 	#elif (TARGET_CPU_X86 || TARGET_CPU_X86_64)
-		int answer = 0;
-		size_t length = sizeof(answer);
-		int error = sysctlbyname("hw.optional.sse3", &answer, &length, NULL, 0);
-		if (!error && answer)
-			result = kVecSSE3;
-		else {
-			answer = 0;
-			length = sizeof(answer);
-			error = sysctlbyname("hw.optional.sse2", &answer, &length, NULL, 0);
+		static const struct { const char* kName; const int kVectype; } kStringVectypes[] = {
+			{ "hw.optional.avx1_0", kVecAVX1 }, { "hw.optional.sse3", kVecSSE3 }, { "hw.optional.sse2", kVecSSE2 }
+		};
+		static const size_t kNumStringVectypes = sizeof(kStringVectypes)/sizeof(kStringVectypes[0]);
+		int i = 0, answer = 0;
+		while(i != kNumStringVectypes)
+		{
+			size_t length = sizeof(answer);
+			int error = sysctlbyname(kStringVectypes[i].kName, &answer, &length, NULL, 0);
 			if (!error && answer)
-				result = kVecSSE2;
-		}
-	#elif (TARGET_CPU_ARM) && defined(_ARM_ARCH_7)
+			{
+				result = kStringVectypes[i].kVectype;
+				break;
+			}
+			++i;
+		};
+	#elif CA_ARM_NEON
 		result = kVecNeon;
 	#endif
 	}

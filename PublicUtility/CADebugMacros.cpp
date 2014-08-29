@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #include "CADebugMacros.h"
@@ -63,7 +63,6 @@ void	DebugPrint(const char *fmt, ...)
 }
 #endif // DEBUG
 
-#if TARGET_API_MAC_OSX
 void	LogError(const char *fmt, ...)
 {
 	va_list args;
@@ -71,7 +70,9 @@ void	LogError(const char *fmt, ...)
 #if DEBUG
 	vprintf(fmt, args);
 #endif
+#if TARGET_API_MAC_OSX
 	vsyslog(LOG_ERR, fmt, args);
+#endif
 	va_end(args);
 }
 
@@ -82,7 +83,8 @@ void	LogWarning(const char *fmt, ...)
 #if DEBUG
 	vprintf(fmt, args);
 #endif
+#if TARGET_API_MAC_OSX
 	vsyslog(LOG_WARNING, fmt, args);
+#endif
 	va_end(args);
 }
-#endif

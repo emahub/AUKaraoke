@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #ifndef __CAThreadSafeList_h__
@@ -223,28 +223,6 @@ private:
 		
 		Node **	phead() { return &this->mHead; }
 		Node *	head() const { return this->mHead; }
-		
-		/*void	dump(char *label) const
-		{
-			char buf[1024];
-			int count = 0;
-			Node *node = mHead;
-			sprintf(buf, "%s:", label);
-			while (node != NULL) {
-				sprintf(buf+strlen(buf), " %p/%d", node, node->mEventType);
-				if (++count == 5) { sprintf(buf+strlen(buf), "..."); break; }
-				node = node->mNext;
-			}
-			puts(buf);
-		}*/
-		
-		/*int size() const
-		{
-			int count = 0;
-			for (Node *node = mHead; node != NULL; node = node->mNext)
-				++count;
-			return count;
-		}*/
 	};
 
 	NodeStack	mActiveList;	// what's actually in the container - only accessed on one thread

@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #if !defined(__CAAudioChannelLayout_h__)
@@ -86,7 +86,7 @@ public:
 	static AudioChannelLayout*	Create(UInt32 inNumberChannelDescriptions);
 	static void					Destroy(AudioChannelLayout* inChannelLayout);
 	static UInt32				CalculateByteSize(UInt32 inNumberChannelDescriptions) { 
-									return OffsetOf32(AudioChannelLayout, mChannelDescriptions) + inNumberChannelDescriptions * SizeOf32(AudioChannelDescription);
+									return SizeOf32(AudioChannelLayout) - SizeOf32(AudioChannelDescription) + (inNumberChannelDescriptions * SizeOf32(AudioChannelDescription));
 								}
 	static void					SetAllToUnknown(AudioChannelLayout& outChannelLayout, UInt32 inNumberChannelDescriptions);
 	static UInt32				NumberChannels(const AudioChannelLayout& inLayout);
@@ -150,12 +150,12 @@ private:
 	public:
 		static RefCountedLayout *CreateWithNumberChannelDescriptions(unsigned nChannels) {
 								size_t size = CAAudioChannelLayout::CalculateByteSize(nChannels);
-								return new(size) RefCountedLayout(size);
+								return new(size) RefCountedLayout((UInt32)size);
 							}
 
 		static RefCountedLayout *CreateWithLayout(const AudioChannelLayout *layout) {
 								size_t size = CAAudioChannelLayout::CalculateByteSize(layout->mNumberChannelDescriptions);
-								RefCountedLayout *acl = new(size) RefCountedLayout(size);
+								RefCountedLayout *acl = new(size) RefCountedLayout((UInt32)size);
 								memcpy(&acl->mACL, layout, size);
 								return acl;
 							}

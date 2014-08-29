@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2012 Apple Inc. All Rights Reserved.
+ Copyright (C) 2014 Apple Inc. All Rights Reserved.
  
 */
 #include "AUEffectBase.h"
@@ -258,7 +258,7 @@ void	AUEffectBase::MaintainKernels()
 	
 	if (mKernelList.size() < nKernels) {
 		mKernelList.reserve(nKernels);
-		for (UInt32 i = mKernelList.size(); i < nKernels; ++i)
+		for (UInt32 i = (UInt32)mKernelList.size(); i < nKernels; ++i)
 			mKernelList.push_back(NewKernel());
 	} else {
 		while (mKernelList.size() > nKernels) {
@@ -433,6 +433,9 @@ OSStatus	AUEffectBase::ProcessBufferLists(
 									AudioBufferList &				outBuffer,
 									UInt32							inFramesToProcess )
 {
+	if (ShouldBypassEffect())
+		return noErr;
+		
 	// interleaved (or mono)
 	switch (mCommonPCMFormat) {
 		case CAStreamBasicDescription::kPCMFormatFloat32 :

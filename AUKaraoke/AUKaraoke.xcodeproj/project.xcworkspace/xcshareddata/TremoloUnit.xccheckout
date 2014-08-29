@@ -1,0 +1,52 @@
+?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>D301DE6D-A8EE-450C-87D6-682537981A52</string>
+	<key>IDESourceControlProjectName</key>
+	<string>AUKaraoke</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>B8CA1EC4-ACF4-4529-8990-C98FC66C84AE</key>
+		<string>http://imgsvn.apple.com/svn/CoreAudio/branches/CA_Cab</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Source/Examples/AudioUnitExamples/StarterAudioUnitExample/AUKaraoke.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>B8CA1EC4-ACF4-4529-8990-C98FC66C84AE</key>
+		<string>../../../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectRepositoryRootDictionary</key>
+	<dict>
+		<key>B8CA1EC4-ACF4-4529-8990-C98FC66C84AE</key>
+		<string>http://imgsvn.apple.com/svn/CoreAudio</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>http://imgsvn.apple.com/svn/CoreAudio/branches/CA_Cab/Source/Examples/AudioUnitReference/StartAUExample/AUKaraoke.xcodeproj</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>B8CA1EC4-ACF4-4529-8990-C98FC66C84AE</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryBranchesRelativeLocationKey</key>
+			<string>branches</string>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlRepositoryTagsRelativeLocationKey</key>
+			<string>tags</string>
+			<key>IDESourceControlRepositoryTrunkRelativeLocationKey</key>
+			<string>trunk</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>B8CA1EC4-ACF4-4529-8990-C98FC66C84AE</string>
+			<key>IDESourceControlWCCName</key>
+			<string>CA_Cab</string>
+		</dict>
+	</array>
+</dict>
+</plist>
